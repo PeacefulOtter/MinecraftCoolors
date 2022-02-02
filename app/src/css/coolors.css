@@ -1,0 +1,99 @@
+
+
+.coolors-wrapper {
+    text-align: center;
+    width: 100%;
+}
+
+.coolor-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.coolor-texture {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    image-rendering: pixelated;
+}
+
+.texture-icons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+        color: white;
+    font-size: 2em;
+}
+
+.icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 1.7em;
+    height: 1.7em;
+    border-radius: 100px;
+    margin: 1vw 0px;
+    background-color: rgba(0, 0, 0, 0.65);
+}
+
+.icon:hover, .icon-checked {
+    background-color: rgba(0, 0, 0, 0.9);
+    cursor: pointer;
+}
+
+.icon-checked {
+    color: rgb(221, 144, 57);
+}
+
+.rotated-icon {
+    transform: rotate(45deg);
+}
+
+.colors {
+    transition: height 200ms;
+}
+
+.colors:hover .color {
+    height: 25% !important;
+    margin-top: 0px;
+}
+
+.colors:hover .coolor-menu {
+    
+}
+
+.colors:hover .coolor-name {
+    display: none;
+}
+
+.is-light .coolor-hex {
+    color: #000 !important;
+}
+
+.is-light .coolor-name {
+    color: #111 !important;
+}
+
+.coolor-menu {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.coolor-hex {
+    font-size: 1.8em;
+    font-family: GothamBold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 3px;
+    color: rgba(255, 255, 255, 1)
+}
+
+.coolor-name {
+    text-transform: capitalize;
+    color: #eaeaea;
+}

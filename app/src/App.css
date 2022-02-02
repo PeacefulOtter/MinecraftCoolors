@@ -1,0 +1,26 @@
+
+:root {
+
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  font-family: GothamLight;
+}
+
+@font-face {
+  font-family: GothamBold;
+  src: url(./css/Gotham_Bold.otf);
+}
+
+@font-face {
+  font-family: GothamMedium;
+  src: url(./css/Gotham_Medium.ttf);
+}
+
+@font-face {
+  font-family: GothamLight;
+  src: url(./css/Gotham_Light.otf);
+}
