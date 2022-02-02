@@ -1,5 +1,6 @@
-import { forwardRef, useImperativeHandle, useState, useEffect } from 'react' 
-import { FiLock, FiUnlock, FiMaximize2, FiX } from 'react-icons/fi'
+import { FC, useState } from 'react' 
+import { FiLock, FiUnlock, FiMaximize2, FiX, FiPlusCircle } from 'react-icons/fi'
+import AddBtn from './AddBtn';
 
 import Menu from './Menu';
 
@@ -16,23 +17,29 @@ const getColorsHeight = (width: number, hover: boolean) => {
     return `calc((100vh - ${width}vw) ${hover ? '' : '* 4'})`
 }
 
-const Coolor = forwardRef( (props: any, ref: any) => {
+type Props = {
+    texture: any;
+    palette: any;
+    width: number;
+    locked: boolean;
+    onDrag: () => void;
+    onLock: () => void;
+}
+
+const Coolor: FC<Props> = ( { width, texture, palette, locked, onDrag, onLock } ) => {
 
     const [hover, setHover] = useState<boolean>(false)
-    const [colorsHeight, setColorsHeight] = useState<string>(getColorsHeight(props.width, false)) 
+    const [colorsHeight, setColorsHeight] = useState<string>(getColorsHeight(width, false)) 
 
-    const texture = props.texture;
-    const palette = props.palette;
-
-    const size = `${props.width}vw`
+    const size = `${width}vw`
     const paletteKeys = Object.keys(palette)
 
     const changeHover = (val: boolean) => {
         setHover(val)
-        setColorsHeight(getColorsHeight(props.width, val))
+        setColorsHeight(getColorsHeight(width, val))
     }
 
-    const LockIcon = props.locked ? FiLock : FiUnlock;
+    const LockIcon = locked ? FiLock : FiUnlock;
 
     return (
         <div className={`coolor-wrapper`} style={{width: size}}>
@@ -40,17 +47,15 @@ const Coolor = forwardRef( (props: any, ref: any) => {
                 className="coolor-texture" 
                 style={{backgroundImage: `url(/minecraft/${texture})`, width: size, height: size}} >
                 <div className="texture-icons">
-                    <div className={`icon`}><FiX/></div>
-                    <div className={`icon ${props.locked ? 'icon-checked' : ''}`} onClick={props.onLock} ><LockIcon /></div>
-                    <div className="icon" onMouseOver={props.onDrag}><FiMaximize2 className="rotated-icon"/></div>
+                    <div className='icon delete-icon'><FiX/></div>
+                    <div className={`icon ${locked ? 'icon-checked' : ''}`} onClick={onLock} ><LockIcon /></div>
+                    <div className='icon drag-icon' onMouseOver={onDrag}><FiMaximize2 className="rotated-icon"/></div>
                 </div>
                 
             </div>
             <div className={`colors ${hover ? 'colors-hover' : ''}`} style={{height: colorsHeight}} 
                 onMouseEnter={()=>changeHover(true)} onMouseLeave={()=>changeHover(false)}>
                 { paletteKeys.map( (color: any, i: number) => {
-                    // const restHeight = `calc((100vh - ${props.width}vw) / ${paletteKeys.length})`
-                    
                     const hex = rgbToHex(palette[color])
                     return <div 
                         key={Math.random() + 2}
@@ -60,9 +65,9 @@ const Coolor = forwardRef( (props: any, ref: any) => {
                     </div>
                 })}
             </div>
+            <AddBtn />
         </div>
     )
-
-} )
+} 
 
 export default Coolor;

@@ -1,5 +1,5 @@
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { DragDropContext, Droppable, Draggable, DropResult, ResponderProvided } from 'react-beautiful-dnd'
 
 import Coolor from './Coolor';
@@ -19,11 +19,12 @@ export interface Color {
     locked: boolean;
 }
 
+let coolorsSave: any[] = []
+
 const Coolors = () => {
     const [nbColors, setNbColors] = useState<number>(5)
     const [coolors, setCoolors] = useState<Color[]>([])
-    const [dragDisabled, setDisableDrag] = useState<boolean>(false)
-    const refs = useRef<Array<any>>([])
+    const [dragDisabled, setDisableDrag] = useState<boolean>(true)
 
     const randomCoolors = () => {
         (async function() {
@@ -36,16 +37,15 @@ const Coolors = () => {
             fetch('/textures', CREDENTIALS)
                 .then(res => res.json())
                 .then(data => {
-                    console.log(refs);
-                    console.log(coolors);
                     console.log(data);
                     
-                    if ( coolors.length === 0 )
+                    if ( coolorsSave.length === 0 )
                         setCoolors(data)
                     else
                     {
-                        setCoolors(cs => cs.map( 
-                            (c,i) => cs[i].locked ? c : data[i]))
+                        setCoolors( coolorsSave.map( 
+                            (c,i) => coolorsSave[i].locked 
+                            ? c : data[i] ) )
                     }
                 });
         })()
@@ -58,30 +58,28 @@ const Coolors = () => {
 
     useEffect( () => {
         randomCoolors()
+        coolorsSave = coolors;
 
         document.addEventListener('keydown', keyDownHandler);
         return () => document.removeEventListener('keydown', keyDownHandler)
-
     }, [])
 
     const onDragEnd = (result: DropResult, provided: ResponderProvided) => {
         const { source, destination } = result;
 
-        console.log(source, destination);
-        
-        
         if (!destination || 
             (source.droppableId === destination.droppableId 
             && source.index === destination.index) )
             return;
     
-        console.log(result);
-        
-        setCoolors(reorder(
+        const newCoolors = reorder(
             coolors,
             source.index,
             destination.index
-        ))
+        )
+
+        setCoolors(newCoolors)
+        coolorsSave = newCoolors;
 
         setDisableDrag(true)
     }
@@ -89,15 +87,17 @@ const Coolors = () => {
     const toggleLock = (i: number) => {
         const temp = [...coolors]
         temp[i].locked = !temp[i].locked
+        coolorsSave = temp;
         setCoolors(temp)
     }
 
     const enableDrag = () => {
         setDisableDrag(false)
     }
-    
+
+
     return (
-        <div className="coolors-wrapper" >
+        <div className="coolors-wrapper">
             <DragDropContext onDragEnd={onDragEnd}>
             <Droppable 
                 droppableId="droppable" 
@@ -111,8 +111,8 @@ const Coolors = () => {
                     >
                         { coolors.map( (coolor, i) => 
                             <Draggable 
-                                key={coolor.texture} 
-                                draggableId={coolor.texture} 
+                                key={coolor.texture + i} 
+                                draggableId={coolor.texture + i} 
                                 isDragDisabled={dragDisabled}
                                 index={i}
                             >
@@ -123,13 +123,12 @@ const Coolors = () => {
                                         {...provided.dragHandleProps}
                                     >
                                         <Coolor 
-                                            ref={el => refs.current[i] = el} 
                                             width={100 / nbColors}
                                             texture={coolor.texture}
                                             palette={coolor.palette}
                                             locked={coolor.locked}
                                             onLock={() => toggleLock(i)} 
-                                            onDrag={enableDrag} />
+                                            onDrag={enableDrag}  />
                                         
                                     </div>
                                     

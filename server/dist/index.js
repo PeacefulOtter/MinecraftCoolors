@@ -29,7 +29,10 @@ app.post("/textures", (req, res, next) => __awaiter(void 0, void 0, void 0, func
     console.log(textures);
     const palettes = textures.map((tex) => coolors[tex]);
     console.log(palettes);
-    res.json({ textures, palettes });
+    const result = textures.map((tex, i) => {
+        return { texture: tex, palette: palettes[i], locked: false };
+    });
+    res.json(result);
 }));
 app.listen(PORT, () => __awaiter(void 0, void 0, void 0, function* () {
     coolors = yield (0, coolors_1.computeCoolors)();

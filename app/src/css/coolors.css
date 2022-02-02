@@ -48,6 +48,14 @@
     color: rgb(221, 144, 57);
 }
 
+.delete-icon:hover {
+    color: rgb(216, 61, 61);
+}
+
+.drag-icon:hover {
+    color: rgb(92, 179, 230);
+}
+
 .rotated-icon {
     transform: rotate(45deg);
 }
@@ -59,10 +67,6 @@
 .colors:hover .color {
     height: 25% !important;
     margin-top: 0px;
-}
-
-.colors:hover .coolor-menu {
-    
 }
 
 .colors:hover .coolor-name {
@@ -96,4 +100,25 @@
 .coolor-name {
     text-transform: capitalize;
     color: #eaeaea;
+}
+
+
+.add-color-container-hover {
+    opacity: 1 !important;
+}
+
+.add-color-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 20vw;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 10px;
+    padding: 4px;
+    font-size: 3em;
+    opacity: 0;
+    cursor: pointer;
+    transition: opacity 300ms;
 }
