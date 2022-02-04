@@ -14,8 +14,14 @@ app.use(express.json({
   	type: ['application/json', 'text/plain']
 }))
 
+app.get('/texture', (req: any, res: any, next: any) => {
+    const texture = getRandomTextures(coolors, 1)[0];
+    const palette = coolors[texture]
+    const result = { texture, palette, locked: false }
+    res.json( result )
+})
 
-app.post("/textures", async (req: any, res: any, next: any) => {
+app.post("/textures", (req: any, res: any, next: any) => {
     const nb = req.body.nb;
     const textures = getRandomTextures(coolors, nb);
     console.log(textures);

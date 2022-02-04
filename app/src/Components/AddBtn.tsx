@@ -4,15 +4,20 @@ import { FiPlusCircle } from 'react-icons/fi'
 
 const MIN_DISTANCE = 150;
 
-const AddBtn: FC = () => {
+type Props = {
+    textureHeight: number;
+    addColor: () => void;
+}
+
+const AddBtn: FC<Props> = ( { textureHeight, addColor } ) => {
     
     const [hover, setHover] = useState<boolean>(false)
-    const [pos, setPos] = useState<number[]>([0, 0])
+    const [posX, setPosX] = useState<number>(0)
     const ref = useRef(null)
 
     const onMouseMove = (event: any) => {
-        const x = event.clientX - pos[0]
-        const y = event.clientY - pos[1]
+        const x = event.clientX - posX
+        const y = event.clientY - textureHeight
         const dist = Math.sqrt(x * x + y * y)
 
         if ( dist < MIN_DISTANCE )
@@ -22,20 +27,20 @@ const AddBtn: FC = () => {
     }
 
     useEffect( () => {
-        const { x, y, width, height } = (ref.current as any).getBoundingClientRect()
-        setPos([x + width / 2, y + height / 2])
+        const { x, width } = (ref.current as any).getBoundingClientRect()
+        const posX = x + (width / 2)
+        setPosX(posX)
 
         document.addEventListener('mousemove', onMouseMove);
         return () => document.removeEventListener('mousemove', onMouseMove)
-    }, [])
-
-    const addColor = () => {
-        console.log("add");
-    }
-
+    }, [ref.current, textureHeight])
 
     return (    
-        <div ref={ref} className={`add-color-container ${hover ? 'add-color-container-hover' : ''}`}  onClick={addColor}>
+        <div 
+            ref={ref} 
+            style={{top: `${textureHeight}px`}}
+            className={`add-color-container ${hover ? 'add-color-container-hover' : ''}`}
+            onClick={addColor} >
             <FiPlusCircle/>
         </div>
     )

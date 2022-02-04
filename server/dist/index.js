@@ -23,7 +23,13 @@ app.use(express_1.default.urlencoded({
 app.use(express_1.default.json({
     type: ['application/json', 'text/plain']
 }));
-app.post("/textures", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+app.get('/texture', (req, res, next) => {
+    const texture = (0, coolors_1.getRandomTextures)(coolors, 1)[0];
+    const palette = coolors[texture];
+    const result = { texture, palette, locked: false };
+    res.json(result);
+});
+app.post("/textures", (req, res, next) => {
     const nb = req.body.nb;
     const textures = (0, coolors_1.getRandomTextures)(coolors, nb);
     console.log(textures);
@@ -33,7 +39,7 @@ app.post("/textures", (req, res, next) => __awaiter(void 0, void 0, void 0, func
         return { texture: tex, palette: palettes[i], locked: false };
     });
     res.json(result);
-}));
+});
 app.listen(PORT, () => __awaiter(void 0, void 0, void 0, function* () {
     coolors = yield (0, coolors_1.computeCoolors)();
     console.log(`Server listening on ${PORT}`);

@@ -1,10 +1,11 @@
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { DragDropContext, Droppable, Draggable, DropResult, ResponderProvided } from 'react-beautiful-dnd'
 
 import Coolor from './Coolor';
 
 import '../css/coolors.css';
+import { get, post } from '../assets/requests';
 
 const reorder = (list: any[], startIndex: number, endIndex: number) => {
     const result = Array.from(list);
@@ -19,49 +20,41 @@ export interface Color {
     locked: boolean;
 }
 
-let coolorsSave: any[] = []
+const defaultColorsNb = 5;
 
 const Coolors = () => {
-    const [nbColors, setNbColors] = useState<number>(5)
     const [coolors, setCoolors] = useState<Color[]>([])
     const [dragDisabled, setDisableDrag] = useState<boolean>(true)
 
     const randomCoolors = () => {
-        (async function() {
-            const CREDENTIALS = {
-                method:'POST',
-                body: JSON.stringify({nb: nbColors}),
-                headers: new Headers()
-            }
+        const colorsNb = coolors.length > 0 
+            ? coolors.length : defaultColorsNb;
 
-            fetch('/textures', CREDENTIALS)
-                .then(res => res.json())
-                .then(data => {
-                    console.log(data);
-                    
-                    if ( coolorsSave.length === 0 )
-                        setCoolors(data)
-                    else
-                    {
-                        setCoolors( coolorsSave.map( 
-                            (c,i) => coolorsSave[i].locked 
-                            ? c : data[i] ) )
-                    }
-                });
-        })()
+        post('/textures', {nb: colorsNb}, (data: any) => {
+            if ( coolors.length === 0 )
+                setCoolors(data)
+            else
+            {
+                setCoolors( coolors.map( 
+                    (c,i) => coolors[i].locked 
+                    ? c : data[i] ) )
+            }
+        })
     }
 
-    const keyDownHandler = (event: KeyboardEvent) => {
+    const keyDownHandler = useCallback( (event: KeyboardEvent) => {
+        console.log(coolors.length);
         if (event.code === "Space")
             randomCoolors()
-    }
+    }, [coolors] )
+
+    useEffect( () => {
+        window.addEventListener('keydown', keyDownHandler);
+        return () => window.removeEventListener('keydown', keyDownHandler)
+    }, [keyDownHandler])
 
     useEffect( () => {
         randomCoolors()
-        coolorsSave = coolors;
-
-        document.addEventListener('keydown', keyDownHandler);
-        return () => document.removeEventListener('keydown', keyDownHandler)
     }, [])
 
     const onDragEnd = (result: DropResult, provided: ResponderProvided) => {
@@ -79,20 +72,32 @@ const Coolors = () => {
         )
 
         setCoolors(newCoolors)
-        coolorsSave = newCoolors;
-
         setDisableDrag(true)
     }
 
     const toggleLock = (i: number) => {
         const temp = [...coolors]
         temp[i].locked = !temp[i].locked
-        coolorsSave = temp;
         setCoolors(temp)
     }
 
     const enableDrag = () => {
         setDisableDrag(false)
+    }
+
+    const addColor = (i: number) => () => {
+        get('/texture', (data: any) => {
+            console.log(data);
+            const temp = [...coolors]
+            temp.splice(i, 0, data);
+            setCoolors(temp);
+        })
+    }
+
+    const deleteColor = (i: number) => () => {
+        const temp = [...coolors]
+        temp.splice(i, 1);
+        setCoolors(temp);
     }
 
 
@@ -106,7 +111,10 @@ const Coolors = () => {
                 {(provided, snapshot) => (
                     <div
                         ref={provided.innerRef}
-                        style={{display: 'flex'}}
+                        style={{width: '100%',
+                                display: 'grid',
+                                gridAutoColumns: '1fr',
+                                gridAutoFlow: 'column'}}
                         {...provided.droppableProps}
                     >
                         { coolors.map( (coolor, i) => 
@@ -123,7 +131,8 @@ const Coolors = () => {
                                         {...provided.dragHandleProps}
                                     >
                                         <Coolor 
-                                            width={100 / nbColors}
+                                            addColor={addColor(i)}
+                                            deleteColor={deleteColor(i)}
                                             texture={coolor.texture}
                                             palette={coolor.palette}
                                             locked={coolor.locked}

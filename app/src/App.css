@@ -1,6 +1,21 @@
 
 :root {
-
+  --1: #a5aca9;
+  --2: rgb(250, 243, 221);
+  --3: #ad8350ff;
+  --4: #525252;
+  --5: #2f2f2f;
+  --6: rgb(233, 57, 72);
+  --7: #9b1d20ff;
+  --8: rgb(35, 206, 107);
+  --9: rgb(8, 139, 40);
+  --10: rgb(168, 70, 160);
+  --11: rgb(40, 146, 215);
+  --12: rgb(247, 108, 94);
+  --13: #F68E5F;
+  --14: #F5DD90;
+  --15: #3e4c5eff;
+  --16: #2c3d55ff;
 }
 
 html, body {
@@ -23,4 +38,8 @@ html, body {
 @font-face {
   font-family: GothamLight;
   src: url(./css/Gotham_Light.otf);
+}
+
+.App {
+  height: 100vh;
 }
