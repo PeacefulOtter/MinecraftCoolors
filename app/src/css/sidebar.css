@@ -2,18 +2,18 @@
     position: absolute;
     top: 0;
     left: 0;
-    width: 400px;
+    width: 350px;
     height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
     border-top-right-radius: 20px;
-    border-right: 3em solid var(--16);
-    padding: 3em 0px;
+    border-right: 3em solid var(--5);
+    padding: 3em;
     background: white;
     z-index: 9999;
-    transform: translateX(calc(-100% + 3em));
+    transform: translateX(calc(-100% + 3em)); /*calc(-100% + 3em)*/
     transition: transform 200ms;
 }
 
@@ -24,14 +24,14 @@
 .bar-icon {
     font-size: 2em;
     border-radius: 5px;
-    border: 3px solid var(--16);
-    color: var(--16);
+    border: 3px solid var(--5);
+    color: var(--5);
     padding: 10px;
 }
 
 .bar-icon:hover {
-    color: var(--15);
-    border-color: var(--15);
+    color: var(--4);
+    border-color: var(--4);
     border-width: 5px;
     padding: 8px;
     cursor: pointer;
@@ -49,8 +49,8 @@
     color: white;
     position: absolute;
     top: 50%;
-    left: 410px;
-    transform: translate(0%, -100%)
+    left: 360px;
+    transform: translate(3em, -200%)
 }
 
 .move-updates {
@@ -58,4 +58,31 @@
     display: flex;
     justify-content: space-around;
     align-items: center;
+}
+
+.bar-coolors {
+    width: 100%;
+    margin: 40px 0px;
+}
+
+.bar-coolor {
+    display: flex;
+    align-items: center;
+    text-transform: capitalize;
+    margin: 10px 0px;
+    font-size: 1.1em;
+    color: var(--5);
+    font-family: GothamBold;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.main-color {
+    min-width: 2.5em;
+    min-height: 2.5em;
+    margin-right: 10px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    image-rendering: pixelated;
 }

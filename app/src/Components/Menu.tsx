@@ -6,7 +6,7 @@ type Props = {
     isLight: boolean;
 }
 
-const format = (s: string) => {
+export const formatTexture = (s: string) => {
     return s.substring(0, s.length - 4).replaceAll('_',' ')
 }
 
@@ -16,7 +16,7 @@ const Menu: FC<Props> = ( { hex, texture, isLight } ) => {
         <div className={`coolor-menu ${isLight ? 'is-light' : ''}`}>
            <div className="coolor-header">
                <div className="coolor-hex">{hex}</div>
-               <div className="coolor-name" id="coolor-name">{format(texture)}</div>
+               <div className="coolor-name" id="coolor-name">{formatTexture(texture)}</div>
            </div>
         </div>
     )

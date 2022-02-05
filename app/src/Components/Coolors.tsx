@@ -1,11 +1,16 @@
 
-import { useEffect, useState, useCallback } from 'react'
+import { FC, useEffect, useState, useCallback } from 'react'
 import { DragDropContext, Droppable, Draggable, DropResult, ResponderProvided } from 'react-beautiful-dnd'
 
 import Coolor from './Coolor';
 
 import '../css/coolors.css';
-import { get, post } from '../assets/requests';
+import { get } from '../assets/requests';
+import { Color } from '../assets/models';
+
+
+const MAX_NB_COLORS = 8;
+const MIN_NB_COLORS = 3;
 
 const reorder = (list: any[], startIndex: number, endIndex: number) => {
     const result = Array.from(list);
@@ -14,38 +19,21 @@ const reorder = (list: any[], startIndex: number, endIndex: number) => {
     return result;
 };
 
-export interface Color {
-    texture: string;
-    palette: {[key: string]: any};
-    locked: boolean;
+
+type Props = {
+    coolors: Color[]
+    setCoolors: (coolors: Color[]) => void
+    setRandomCoolors: () => void;
 }
 
-const defaultColorsNb = 5;
 
-const Coolors = () => {
-    const [coolors, setCoolors] = useState<Color[]>([])
+const Coolors: FC<Props> = ( { coolors, setCoolors, setRandomCoolors } ) => {
     const [dragDisabled, setDisableDrag] = useState<boolean>(true)
-
-    const randomCoolors = () => {
-        const colorsNb = coolors.length > 0 
-            ? coolors.length : defaultColorsNb;
-
-        post('/textures', {nb: colorsNb}, (data: any) => {
-            if ( coolors.length === 0 )
-                setCoolors(data)
-            else
-            {
-                setCoolors( coolors.map( 
-                    (c,i) => coolors[i].locked 
-                    ? c : data[i] ) )
-            }
-        })
-    }
 
     const keyDownHandler = useCallback( (event: KeyboardEvent) => {
         console.log(coolors.length);
         if (event.code === "Space")
-            randomCoolors()
+            setRandomCoolors()
     }, [coolors] )
 
     useEffect( () => {
@@ -54,7 +42,7 @@ const Coolors = () => {
     }, [keyDownHandler])
 
     useEffect( () => {
-        randomCoolors()
+        setRandomCoolors()
     }, [])
 
     const onDragEnd = (result: DropResult, provided: ResponderProvided) => {
@@ -86,6 +74,10 @@ const Coolors = () => {
     }
 
     const addColor = (i: number) => () => {
+
+        if ( coolors.length >= MAX_NB_COLORS )
+            return;
+
         get('/texture', (data: any) => {
             console.log(data);
             const temp = [...coolors]
@@ -95,11 +87,28 @@ const Coolors = () => {
     }
 
     const deleteColor = (i: number) => () => {
+
+        if ( coolors.length <= MIN_NB_COLORS )
+            return; 
+            
         const temp = [...coolors]
         temp.splice(i, 1);
         setCoolors(temp);
     }
 
+    const getItemStyle = (isDragging: boolean, props: any) => {
+
+        const { style } = props;
+        const { transform, ...draggableStyle } = style;
+        
+        if ( !transform ) 
+            return props
+
+        const x = transform.split('px')[0].replace('translate(', '')
+        props['style']['transform'] = `translate(${x}px, 0px)`
+
+        return props;
+    }
 
     return (
         <div className="coolors-wrapper">
@@ -124,10 +133,17 @@ const Coolors = () => {
                                 isDragDisabled={dragDisabled}
                                 index={i}
                             >
-                                {(provided, snapshot) => (
+                                {(provided, snapshot) => {
+
+                                    const style = getItemStyle(
+                                        snapshot.isDragging,
+                                        provided.draggableProps
+                                    )
+
+                                    return (
                                     <div
                                         ref={provided.innerRef}
-                                        {...provided.draggableProps}
+                                        {...style}
                                         {...provided.dragHandleProps}
                                     >
                                         <Coolor 
@@ -141,7 +157,7 @@ const Coolors = () => {
                                         
                                     </div>
                                     
-                                )}
+                                )}}
                             </Draggable> ) 
                         }
                         {provided.placeholder}
